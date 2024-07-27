@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teams and Guilds</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        #teams-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: flex-start;
+        }
+        .team {
+            width: calc(20% - 16px); /* 5 items per row, accounting for gap */
+            border: 1px solid #ddd;
+            padding: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+        .team-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            background-color: #f0f0f0;
+            padding: 5px;
+        }
+        .guilds-container {
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        .guild {
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        /* Styling the scrollbar */
+        .guilds-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        .guilds-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .guilds-container::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        .guilds-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        @media (max-width: 1200px) {
+            .team {
+                width: calc(25% - 15px); /* 4 items per row */
+            }
+        }
+        @media (max-width: 900px) {
+            .team {
+                width: calc(33.33% - 13.33px); /* 3 items per row */
+            }
+        }
+        @media (max-width: 600px) {
+            .team {
+                width: calc(50% - 10px); /* 2 items per row */
+            }
+        }
+        @media (max-width: 400px) {
+            .team {
+                width: 100%; /* 1 item per row */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="teams-container"></div>
+
+    <script>
+        fetch('teams.json')
+            .then(response => response.json())
+            .then(data => {
+                teamsData = data;
+                displayTeamsAndGuilds();
+            });
+
+        function displayTeamsAndGuilds() {
+            const container = document.getElementById('teams-container');
+            
+            for (const teamId in teamsData) {
+                const team = teamsData[teamId];
+                const teamElement = document.createElement('div');
+                teamElement.className = 'team';
+                
+                const teamName = document.createElement('div');
+                teamName.className = 'team-name';
+                teamName.textContent = team.name + ` (${Object.keys(team.guilds).length})`;
+                teamElement.appendChild(teamName);
+                
+                const guildsContainer = document.createElement('div');
+                guildsContainer.className = 'guilds-container';
+                
+                for (const guildId in team.guilds) {
+                    const guild = team.guilds[guildId];
+                    const guildElement = document.createElement('div');
+                    guildElement.className = 'guild';
+                    guildElement.textContent = `${guild[0]} [${guild[1]}]`;
+                    guildsContainer.appendChild(guildElement);
+                }
+                
+                teamElement.appendChild(guildsContainer);
+                container.appendChild(teamElement);
+            }
+        }
+    </script>
+</body>
+</html>
